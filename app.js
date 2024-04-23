@@ -10,7 +10,7 @@ const {bot} = require('./bot');
 const TLS = process.env.IMAP_TLS
 const TLS_VAL = TLS === 'true';
 //|(VPTI-\d+)
-const regex = /(Error)|(Falla)|(Incidencia)|(VPTI-\d+)|(Invitacion)|(Reunion)/i;
+const regex = /(Error)|(Falla)|(Incidencia)|(VPTI-\d+)|(Invitacion)|(Reunion)|(CDC#\d+)/i;
 
 let mails = [];
 const imapConfig = {
@@ -67,7 +67,7 @@ imap.once('ready', function() {
     
                             Filter.forEach(async mail =>{
                                     const match = mail.subject.match(regex);
-                                    const tipo = match[1] ? 'Error' : match[2] ? 'Falla' : match[3] ? 'Incidencia' : match[4] ? 'VPTI' : match[5] ? 'Invitacion' : match[6] ? 'Reunion' : Logguer.info('No se encontro coincidencias con los parametros de busqueda...')
+                                    const tipo = match[1] ? 'Error' : match[2] ? 'Falla' : match[3] ? 'Incidencia' : match[4] ? 'VPTI' : match[5] ? 'Invitacion' : match[6] ? 'Reunion' : match[7] ? 'CDC' : Logguer.info('No se encontro coincidencias con los parametros de busqueda...')
                                     Logguer.log(mail.id+' '+mail.date);
                                     try {
                                         await bot.telegram.sendMessage('854982095', 'Grupo: '+tipo+' \n\nAsunto: '+mail.subject+' \n\nContenido:\n\n'+mail.text);
