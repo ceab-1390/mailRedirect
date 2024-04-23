@@ -10,7 +10,7 @@ const {bot} = require('./bot');
 const TLS = process.env.IMAP_TLS
 const TLS_VAL = TLS === 'true';
 //|(VPTI-\d+)
-const regex = /(Error)|(Falla)|(Incidencia)|(VPTI-\d+)|(Invitacion)|(Reunion)|(CDC#\d+)/i;
+const regex = /(Error)|(Falla)|(Incidencia)|(VPTI-\d+)|(Invitacion)|(Reunion)|(CDC)/i;
 
 let mails = [];
 const imapConfig = {
