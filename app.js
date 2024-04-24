@@ -10,7 +10,6 @@ const {Uid} = require('./db/models');
 
 const TLS = process.env.IMAP_TLS
 const TLS_VAL = TLS === 'true';
-//|(VPTI-\d+)
 const regex = /(Error)|(Falla)|(Incidencia)|(VPTI-\d+)|(Invitacion)|(Reunion)|(CDC)/i;
 
 let mails = [];
@@ -51,9 +50,11 @@ imap.once('ready', function() {
                                     mails[seqno].id = results[i];
                                     if (mail.text) {
                                         mails[seqno].text = mail.text;
+                                        Logguer.debug('===========TEXT==================')
                                         Logguer.debug(mail.text);
                                     }else if (mail.html){
                                         mails[seqno].text = mail.html;
+                                        Logguer.debug('===========HTML==================')
                                         Logguer.debug(mail.html);
                                     }
                                 });
