@@ -22,8 +22,15 @@ class Logguer{
         }
     };
     error(error){
-        if (level === 'error' ){
+        if (level === 'error' || level === 'debug'){
             return console.error(new Error(error));
+        }else{
+            return;
+        }
+    };
+    debug(debug){
+        if (level === 'error' || level === 'debug'){
+            return console.debug(debug);
         }else{
             return;
         }
