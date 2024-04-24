@@ -29,7 +29,7 @@ class Logguer{
         }
     };
     debug(debug){
-        if (level === 'error' || level === 'debug'){
+        if (level === 'debug'){
             return console.debug(debug);
         }else{
             return;
