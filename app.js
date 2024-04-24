@@ -4,6 +4,7 @@ const Imap = require('imap');
 const { simpleParser } = require('mailparser');
 const moment = require('moment');
 const {bot} = require('./bot');
+const {Uid} = require('./db/models');
 
 
 
@@ -70,15 +71,21 @@ imap.once('ready', function() {
                                     const tipo = match[1] ? 'Error' : match[2] ? 'Falla' : match[3] ? 'Incidencia' : match[4] ? 'VPTI' : match[5] ? 'Invitacion' : match[6] ? 'Reunion' : match[7] ? 'CDC' : Logguer.info('No se encontro coincidencias con los parametros de busqueda...')
                                     Logguer.log(mail.id+' '+mail.date);
                                     try {
-                                        await bot.telegram.sendMessage('854982095', 'Grupo: '+tipo+' \n\nAsunto: '+mail.subject+' \n\nContenido:\n\n'+mail.text);
-                                        imap.addFlags(mail.id, ['\\SEEN'], function(err) {
-                                            if (err) {
-                                                Logguer.error('Error al marcar el correo como leído: ' + err);
-                                            } else {
-                                                Logguer.log('Correo marcado como leído: ' + mail.subject);
+                                        let findUid = await Uid.findOne(mail.uid);
+                                        if (findUid){
+                                            throw new Error('Este correo ya fue enviado');
+                                        }else{
+                                            await bot.telegram.sendMessage('854982095', 'Grupo: '+tipo+' \n\nAsunto: '+mail.subject+' \n\nContenido:\n\n'+mail.text);
+                                            let data = {};
+                                            data.uid = mail.id;
+                                            data.send = true;
+                                            let saving = await Uid.registerUidSend(data);
+                                            if (!saving){
+                                                Logguer.error('No se guardo el registro del UID');
+                                            }else{
+                                                Logguer.info('Se registro el uid como enviado')
                                             }
-                                        Logguer.log('Send')
-                                        });
+                                        }
                                     } catch (error) {
                                         Logguer.error(error)
                                     }
