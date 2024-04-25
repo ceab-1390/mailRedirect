@@ -1,4 +1,6 @@
-level = process.env.LOG_LEVEL;
+import dotenv from 'dotenv';
+dotenv.config();
+let level = process.env.LOG_LEVEL;
 
 class Logguer{
     constructor(logguer){
@@ -39,4 +41,5 @@ class Logguer{
 
 const logguer = new Logguer();
 
-module.exports = logguer;
+//module.exports = logguer;
+export default logguer;

@@ -1,6 +1,8 @@
-const logguer = require('../logguer/logguer');
-const {db, default: mongoose, Schema, model, isObjectIdOrHexString} = require('./db');
-
+//const logguer = require('../logguer/logguer');
+import logguer from '../logguer/logguer.js';
+//const {db, default: mongoose, Schema, model, isObjectIdOrHexString} = require('./db');
+import dbModule from './db.js';
+const {db, Schema, mongoose, model, isObjectIdOrHexString} = dbModule
 
 const uidSchema = new mongoose.Schema({
     uid:{
@@ -50,4 +52,5 @@ class Uid{
 }
 
 
-module.exports = {Uid}
+//module.exports = {Uid}
+export default {Uid}

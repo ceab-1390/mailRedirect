@@ -1,10 +1,18 @@
-require('dotenv').config();
-const Logguer = require('./logguer/logguer');
-const Imap = require('imap');
-const { simpleParser } = require('mailparser');
-const moment = require('moment');
-const {bot} = require('./bot');
-const {Uid} = require('./db/models');
+//require('dotenv').config();
+//const Logguer = require('./logguer/logguer');
+import Logguer  from './logguer/logguer.js';
+//const Imap = require('imap');
+import Imap from 'imap'
+//const { simpleParser } = require('mailparser');
+import {simpleParser} from 'mailparser'
+//const moment = require('moment');
+import moment from 'moment';
+//const {bot} = require('./bot');
+import botModule from './bot.js'
+const {bot} = botModule
+//const {Uid} = require('./db/models');
+import uidModule from './db/models.js';
+const {Uid} = uidModule
 
 
 
@@ -74,6 +82,7 @@ imap.once('ready', function() {
                             });
     
                             Filter.forEach(async mail =>{
+                                    Logguer.debug(mail)
                                     const match = mail.subject.match(regex);
                                     const tipo = match[1] ? 'Error' : match[2] ? 'Falla' : match[3] ? 'Incidencia' : match[4] ? 'VPTI' : match[5] ? 'Invitacion' : match[6] ? 'Reunion' : match[7] ? 'CDC' : Logguer.debug('No se encontro coincidencias con los parametros de busqueda...')
                                     Logguer.debug('#5):Coincidencia: '+mail.id+' '+mail.date+' tipo: '+ tipo);
