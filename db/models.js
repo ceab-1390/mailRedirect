@@ -35,7 +35,8 @@ class Uid{
             const uid = await uidModel.findOne({uid:obj});
             return uid
         } catch (error) {
-           logguer.error(error); 
+            logguer.error(error); 
+            return false;
         }
     }
     static async getAll(){
