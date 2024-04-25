@@ -37,7 +37,7 @@ imap.once('ready', function() {
                     if (err) throw err;
                     results = results.sort((a,b) => b - a );
                     for ( let i = 0; i < nuevos; i++ ){
-                        Logguer.debug('Correo obtenido ID: '+results[i])
+                        Logguer.debug('#0):Correo obtenido ID: '+results[i])
                         const f = imap.fetch(results[i], fetchOptions);
                         f.on('message', function(msg, seqno) {
                             msg.on('body',  function(stream, info) {
@@ -50,12 +50,15 @@ imap.once('ready', function() {
                                     mails[seqno].id = results[i];
                                     if (mail.text) {
                                         mails[seqno].text = mail.text;
-                                        Logguer.debug('===========TEXT==================')
+                                        Logguer.debug('#1):===========TEXT==================')
                                         Logguer.debug(mail.text);
+                                        Logguer.debug('#2):=========TEXT END================')
                                     }else if (mail.html){
                                         mails[seqno].text = mail.html;
-                                        Logguer.debug('===========HTML==================')
+                                        Logguer.debug('#3):===========HTML==================')
                                         Logguer.debug(mail.html);
+                                        Logguer.debug('#4):=========END HTML================')
+                                        
                                     }
                                 });
                             });
@@ -73,12 +76,14 @@ imap.once('ready', function() {
                             Filter.forEach(async mail =>{
                                     const match = mail.subject.match(regex);
                                     const tipo = match[1] ? 'Error' : match[2] ? 'Falla' : match[3] ? 'Incidencia' : match[4] ? 'VPTI' : match[5] ? 'Invitacion' : match[6] ? 'Reunion' : match[7] ? 'CDC' : Logguer.debug('No se encontro coincidencias con los parametros de busqueda...')
-                                    Logguer.debug('Coincidencia: '+mail.id+' '+mail.date+' tipo: '+ tipo);
+                                    Logguer.debug('#5):Coincidencia: '+mail.id+' '+mail.date+' tipo: '+ tipo);
                                     try {
                                         let findUid = await Uid.findOne(mail.uid);
                                         if (findUid){
                                             throw new Error('Este correo ya fue enviado');
                                         }else{
+                                            Logguer.debug('#6): Contenido de la variable text: ======================================================= ')
+                                            Logguer.debug('#7): '+mail.text);
                                             await bot.telegram.sendMessage('854982095', 'Grupo: '+tipo+'\n\nDe: '+mail.from+' \n\nAsunto: '+mail.subject+' \n\nContenido:\n\n'+mail.text);
                                             let data = {};
                                             data.uid = mail.id;
