@@ -88,6 +88,7 @@ imap.once('ready', function() {
                                     Logguer.debug('#5):Coincidencia: '+mail.id+' '+mail.date+' tipo: '+ tipo);
                                     try {
                                         let findUid = await Uid.findOne(mail.uid);
+                                        Logguer.debug(findUid);
                                         if (findUid){
                                             throw new Error('Este correo ya fue enviado');
                                         }else{
