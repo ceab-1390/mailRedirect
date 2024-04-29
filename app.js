@@ -88,6 +88,7 @@ imap.once('ready', function() {
                                     Logguer.debug('#5):Coincidencia: '+mail.id+' '+mail.date+' tipo: '+ tipo);
                                     try {
                                         let findUid = await Uid.findOne(mail.uid);
+                                        Logguer.debug('#8):=========================Validar UID==================================')
                                         Logguer.debug(findUid);
                                         if (findUid){
                                             throw new Error('Este correo ya fue enviado');
@@ -106,6 +107,9 @@ imap.once('ready', function() {
                                             }
                                         }
                                     } catch (error) {
+                                        if (error.message.includes('400: Bad Request: message is too long')){
+                                            Logguer.debug('Se detecto un mensaje largo')
+                                        }
                                         Logguer.error(error)
                                     }
                             })
