@@ -36,7 +36,7 @@ class Uid{
         try {
             const uid = await uidModel.findOne({uid:obj});
             logguer.debug('DB1: '+uid)
-            if (uid == '[]'){
+            if (uid == null){
                 return false;
             }else{
                 return true;
