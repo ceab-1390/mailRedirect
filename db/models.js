@@ -32,11 +32,15 @@ class Uid{
         }
     }
 
-    static async findOne(obj){
+    static async validUid(obj){
         try {
             const uid = await uidModel.findOne({uid:obj});
             logguer.debug('DB1: '+uid)
-            return uid
+            if (uid == '[]'){
+                return false;
+            }else{
+                return true;
+            }
         } catch (error) {
             logguer.error(error); 
             return false;
