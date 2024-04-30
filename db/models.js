@@ -35,6 +35,7 @@ class Uid{
     static async findOne(obj){
         try {
             const uid = await uidModel.findOne({uid:obj});
+            logguer.debug('DB1: '+uid)
             return uid
         } catch (error) {
             logguer.error(error); 
