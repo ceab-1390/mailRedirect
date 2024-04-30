@@ -89,7 +89,7 @@ imap.once('ready', function() {
                                     Logguer.debug('#5):Coincidencia: '+mail.id+' '+mail.date+' tipo: '+ tipo);
                                     try {
                                         let findUid = await Uid.validUid(mail.uid);
-                                        Logguer.debug('#8):=========================Validar UID==================================')
+                                        Logguer.debug('#8):=========================Validar UID================================== '+mail.uid)
                                         Logguer.debug(findUid);
                                         if (findUid){
                                             throw new Error('Este correo ya fue enviado');
