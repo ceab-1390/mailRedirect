@@ -19,7 +19,7 @@ const {Uid} = uidModule
 const USER = process.env.TELEGRAM_USER_ID;
 const TLS = process.env.IMAP_TLS
 const TLS_VAL = TLS === 'true';
-const regex = /(Error)|(Falla)|(Incidencia)|(VPTI-\d+)|(Invitacion)|(Reunion)|(CDC)/i;
+const regex = /(Error)|(Falla)|(Incidencia)|(VPTI)|(Invitacion)|(Reunion)|(CDC)/i;
 
 let mails = [];
 const imapConfig = {
