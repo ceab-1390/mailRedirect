@@ -16,7 +16,7 @@ import createOne from './pdfMake.js';
 const {Uid} = uidModule
 
 
-
+const USER = process.env.TELEGRAM_USER_ID;
 const TLS = process.env.IMAP_TLS
 const TLS_VAL = TLS === 'true';
 const regex = /(Error)|(Falla)|(Incidencia)|(VPTI-\d+)|(Invitacion)|(Reunion)|(CDC)/i;
@@ -96,7 +96,7 @@ imap.once('ready', function() {
                                         }else{
                                             Logguer.debug('#6): Contenido de la variable text: ======================================================= ')
                                             Logguer.debug('#7): '+mail.text);
-                                            await bot.telegram.sendMessage('854982095', 'Grupo: '+tipo+'\n\nDe: '+mail.from+' \n\nAsunto: '+mail.subject+' \n\nContenido:\n\n'+mail.text);
+                                            await bot.telegram.sendMessage(USER, 'Grupo: '+tipo+'\n\nDe: '+mail.from+' \n\nAsunto: '+mail.subject+' \n\nContenido:\n\n'+mail.text);
                                             let data = {};
                                             data.uid = mail.id;
                                             data.send = true;
@@ -117,7 +117,7 @@ imap.once('ready', function() {
                                             data.texto = texto
                                             createOne(data).then(async results => {
                                                 try {
-                                                    await bot.telegram.sendDocument('854982095',{source:results},{caption: 'Su correo es muy largo para ser enviado via texto, aqui tiene un pdf con el contenido:'})
+                                                    await bot.telegram.sendDocument(USER,{source:results},{caption: 'Su correo es muy largo para ser enviado via texto, aqui tiene un pdf con el contenido:'})
                                                 } catch (error) {
                                                     Logguer.error(error)
                                                 }
