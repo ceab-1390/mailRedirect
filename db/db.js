@@ -15,7 +15,7 @@ class Connect {
     async connect(){
         try {
             await this.mongoose.connect(process.env.DB_URI,{});
-            Logguer.info('DB Connected')
+            Logguer.info('Conexion a base de datos exitosa')
         } catch (error) {
             Logguer.error(error);
         }

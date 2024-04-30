@@ -12,6 +12,7 @@ import botModule from './bot.js'
 const {bot} = botModule
 //const {Uid} = require('./db/models');
 import uidModule from './db/models.js';
+import createOne from './pdfMake.js';
 const {Uid} = uidModule
 
 
@@ -31,7 +32,7 @@ const imapConfig = {
 
 const imap = new Imap(imapConfig);
 imap.once('ready', function() {
-    Logguer.log('Conexión establecida');
+    Logguer.log('Conexión al correo establecida');
     imap.openBox('INBOX', true, function(err, box) {
         if (err) throw err;
         Logguer.log('Buzón abierto: ' + box.name);
@@ -47,9 +48,9 @@ imap.once('ready', function() {
                     for ( let i = 0; i < nuevos; i++ ){
                         Logguer.debug('#0):Correo obtenido ID: '+results[i])
                         const f = imap.fetch(results[i], fetchOptions);
-                        f.on('message', function(msg, seqno) {
-                            msg.on('body',  function(stream, info) {
-                                simpleParser(stream, {}, (err, mail) => {
+                        f.on('message',async function(msg, seqno) {
+                            msg.on('body',async  function(stream, info) {
+                                simpleParser(stream, {},async (err, mail) => {
                                     if (err) throw err;
                                     mails[seqno] = {}
                                     mails[seqno].from = mail.from.text;
@@ -108,7 +109,23 @@ imap.once('ready', function() {
                                         }
                                     } catch (error) {
                                         if (error.message.includes('400: Bad Request: message is too long')){
-                                            Logguer.debug('Se detecto un mensaje largo')
+
+                                            let data = {};
+                                            let texto = mail.text
+                                            texto = texto.trim().split('\n');
+                                            texto = texto.map(texto => texto);
+                                            data.texto = texto
+                                            createOne(data).then(async results => {
+                                                try {
+                                                    await bot.telegram.sendDocument('854982095',{source:results},{caption: 'Su correo es muy largo para ser enviado via texto, aqui tiene un pdf con el contenido:'})
+                                                } catch (error) {
+                                                    Logguer.error(error)
+                                                }
+                                            }).catch(error => {
+                                                Logguer.error(error)
+                                            })
+
+                                            Logguer.debug('Se detecto un mensaje largo');
                                         }
                                         Logguer.error(error)
                                     }
@@ -126,3 +143,6 @@ imap.once('error', (error) =>{
 });
 
 imap.connect();
+
+
+
