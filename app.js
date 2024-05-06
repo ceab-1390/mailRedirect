@@ -1,16 +1,10 @@
-//require('dotenv').config();
-//const Logguer = require('./logguer/logguer');
+
 import Logguer  from './logguer/logguer.js';
-//const Imap = require('imap');
 import Imap from 'imap'
-//const { simpleParser } = require('mailparser');
 import {simpleParser} from 'mailparser'
-//const moment = require('moment');
 import moment from 'moment';
-//const {bot} = require('./bot');
 import botModule from './bot.js'
 const {bot} = botModule
-//const {Uid} = require('./db/models');
 import uidModule from './db/models.js';
 import createOne from './pdfMake.js';
 import logguer from './logguer/logguer.js';
@@ -32,19 +26,18 @@ const imapConfig = {
 }
 
 const imap = new Imap(imapConfig);
-imap.once('ready', function() {
+imap.once('ready',async function() {
     Logguer.log('Conexión al correo establecida');
-    imap.openBox('INBOX', true, function(err, box) {
+    imap.openBox('INBOX', true,async function(err, box) {
         if (err) throw err;
         Logguer.log('Buzón abierto: ' + box.name);
-        incomingMail();
+        await incomingMail();
     });
 });
 
 imap.once('error', (error) =>{
     Logguer.log(error)
 });
-
 
 async function incomingMail(){
     Logguer.debug('Incoming mails')
@@ -53,10 +46,10 @@ async function incomingMail(){
         Logguer.log(today);
         let nuevos = cant;
         const searchCriteria = ['UNSEEN',['SINCE', today]];
-        imap.search(searchCriteria,async function(err, results) {
+        await imap.search(searchCriteria,async function(err, results) {
             if (err) throw err;
             results = results.sort((a,b) => b - a );
-            handleMails(results,nuevos);
+            await handleMails(results,nuevos);
         });
     });
 };
@@ -66,7 +59,7 @@ async function handleMails(results,nuevos){
     for ( let i = 0; i < nuevos; i++ ){
         Logguer.debug('#0):Correo obtenido ID: '+results[i])
         const f = imap.fetch(results[i], fetchOptions);
-        processMail(f,results[i]);
+        await processMail(f,results[i]);
 
     };
 };
