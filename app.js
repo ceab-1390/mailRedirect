@@ -79,19 +79,20 @@ imap.on('mail',async (cant)=>{
                             Logguer.debug('#9):=======================no tiene text ni html =================')
                             Logguer.debug(mail)
                         }
-                        resolve(mails)
+                        resolve(f,mails)
                     });
                 });
+            });
+            f.once('error', function(err) {
+                Logguer.log('Error al fetch: ' + err);
             });
         })
         fetchPromises.push(fetchPromise);
     };
 });
-f.once('error', function(err) {
-    Logguer.log('Error al fetch: ' + err);
-});
 
-Promise.all(fetchPromises).then((mails)=>{
+
+Promise.all(fetchPromises).then((f,mails)=>{
     f.once('end',async function() {
         Logguer.log('Fin de fetch');
         let Filter = await mails.filter( async mail_f => {
