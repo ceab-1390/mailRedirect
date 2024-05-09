@@ -109,8 +109,8 @@ async function processMail(f,results){
                 const tipo =await match[1] ? 'Error' : match[2] ? 'Falla' : match[3] ? 'Incidencia' : match[4] ? 'VPTI' : match[5] ? 'Invitacion' : match[6] ? 'Reunion' : match[7] ? 'CDC' : Logguer.debug('No se encontro coincidencias con los parametros de busqueda...')
                 Logguer.debug('#5):Coincidencia: '+mail.id+' '+mail.date+' tipo: '+ tipo);
                 try {
-                    let findUid = await Uid.validUid(mail.uid);
-                    Logguer.debug('#8):=========================Validar UID================================== '+mail.uid)
+                    let findUid = await Uid.validUid(mail.id);
+                    Logguer.debug('#8):=========================Validar UID================================== '+mail.id)
                     Logguer.debug(findUid);
                     if (findUid){
                         throw new Error('Este correo ya fue enviado');
