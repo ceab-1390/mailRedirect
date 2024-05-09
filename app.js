@@ -100,7 +100,7 @@ async function processMail(f,results){
             const match = mail_f.subject.match(regex);
             return match !== null;
         });
-        filterMail(Filter,match);
+        filterMail(Filter);
     });
 };
 
