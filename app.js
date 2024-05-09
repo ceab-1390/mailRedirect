@@ -28,7 +28,7 @@ const imapConfig = {
 const imap = new Imap(imapConfig);
 imap.once('ready',async function() {
     Logguer.log('Conexión al correo establecida');
-    imap.openBox('INBOX', true,async function(err, box) {
+    imap.openBox('INBOX', false,async function(err, box) {
         if (err) throw err;
         Logguer.log('Buzón abierto: ' + box.name);
         await incomingMail();
@@ -55,7 +55,7 @@ async function incomingMail(){
 };
 
 async function handleMails(results,nuevos){
-    const fetchOptions = { bodies: ['HEADER.FIELDS (FROM TO SUBJECT DATE)', ''], struct: true };
+    const fetchOptions = { bodies: ['HEADER.FIELDS (FROM TO SUBJECT DATE)', ''], struct: true, markSeen : true };
     for ( let i = 0; i < nuevos; i++ ){
         Logguer.debug('#0):Correo obtenido ID: '+results[i])
         const f = imap.fetch(results[i], fetchOptions);
