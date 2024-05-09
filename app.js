@@ -98,12 +98,9 @@ async function processMail(f,results){
     });
     f.once('end',async function() {
         Logguer.log('Fin de fetch');
-        let Filter = await mails.filter(mail_f => {
+        let Filter = await mails.filter( async mail_f => {
             const match = mail_f.subject.match(regex);
-            return match !== null;
-        });
-
-        Filter.forEach(async mail =>{
+            await Filter.forEach(async mail =>{
                 Logguer.debug(mail)
                 const match = await mail.subject.match(regex);
                 const tipo =await match[1] ? 'Error' : match[2] ? 'Falla' : match[3] ? 'Incidencia' : match[4] ? 'VPTI' : match[5] ? 'Invitacion' : match[6] ? 'Reunion' : match[7] ? 'CDC' : Logguer.debug('No se encontro coincidencias con los parametros de busqueda...')
@@ -151,7 +148,11 @@ async function processMail(f,results){
                     }
                     Logguer.error(error)
                 }
-        })
+            });
+            return match !== null;
+        });
+
+
     });
 }
 
