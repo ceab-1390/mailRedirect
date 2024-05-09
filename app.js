@@ -1,4 +1,3 @@
-
 import Logguer  from './logguer/logguer.js';
 import Imap from 'imap'
 import {simpleParser} from 'mailparser'
@@ -7,7 +6,6 @@ import botModule from './bot.js'
 const {bot} = botModule
 import uidModule from './db/models.js';
 import createOne from './pdfMake.js';
-import logguer from './logguer/logguer.js';
 const {Uid} = uidModule
 
 
@@ -96,67 +94,66 @@ async function processMail(f,results){
     f.once('error', function(err) {
         Logguer.log('Error al fetch: ' + err);
     });
-    f.once('end',async function() {
+    await f.once('end',async function() {
         Logguer.log('Fin de fetch');
         let Filter = await mails.filter( async mail_f => {
             const match = mail_f.subject.match(regex);
-            await Filter.forEach(async mail =>{
-                Logguer.debug(mail)
-                const match = await mail.subject.match(regex);
-                const tipo =await match[1] ? 'Error' : match[2] ? 'Falla' : match[3] ? 'Incidencia' : match[4] ? 'VPTI' : match[5] ? 'Invitacion' : match[6] ? 'Reunion' : match[7] ? 'CDC' : Logguer.debug('No se encontro coincidencias con los parametros de busqueda...')
-                Logguer.debug('#5):Coincidencia: '+mail.id+' '+mail.date+' tipo: '+ tipo);
-                try {
-                    let findUid = await Uid.validUid(mail.id);
-                    Logguer.debug('#8):=========================Validar UID================================== '+mail.id)
-                    Logguer.debug(findUid);
-                    if (findUid){
-                        throw new Error('Este correo ya fue enviado');
-                    }else{
-                        Logguer.debug('#6): Contenido de la variable text: ======================================================= ')
-                        Logguer.debug('#7): '+mail.text);
-                        await bot.telegram.sendMessage(USER, 'Grupo: '+tipo+'\n\nDe: '+mail.from+' \n\nAsunto: '+mail.subject+' \n\nContenido:\n\n'+mail.text);
-                        let data = {};
-                        data.uid = mail.id;
-                        data.send = true;
-                        let saving = await Uid.registerUidSend(data);
-                        if (!saving){
-                            Logguer.error('No se guardo el registro del UID');
-                        }else{
-                            Logguer.info('Se registro el uid como enviado')
-                        }
-                    }
-                } catch (error) {
-                    if (error.message.includes('400: Bad Request: message is too long')){
-
-                        let data = {};
-                        let texto = mail.text;
-                        data.from = mail.from;
-                        texto = texto.trim().split('\n');
-                        texto = texto.map(texto => texto);
-                        data.texto = texto
-                        createOne(data).then(async results => {
-                            try {
-                                await bot.telegram.sendDocument(USER,{source:results},{caption: 'Su correo es muy largo para ser enviado via texto, aqui tiene un pdf con el contenido:'})
-                            } catch (error) {
-                                Logguer.error(error)
-                            }
-                        }).catch(error => {
-                            Logguer.error(error)
-                        })
-
-                        Logguer.debug('Se detecto un mensaje largo');
-                    }
-                    Logguer.error(error)
-                }
-            });
             return match !== null;
         });
+        filterMail(Filter,match);
+    });
+};
 
+async function filterMail(Filter){
+    await Filter.forEach(async mail =>{
+        Logguer.debug(mail)
+        const match = await mail.subject.match(regex);
+        const tipo =await match[1] ? 'Error' : match[2] ? 'Falla' : match[3] ? 'Incidencia' : match[4] ? 'VPTI' : match[5] ? 'Invitacion' : match[6] ? 'Reunion' : match[7] ? 'CDC' : Logguer.debug('No se encontro coincidencias con los parametros de busqueda...')
+        Logguer.debug('#5):Coincidencia: '+mail.id+' '+mail.date+' tipo: '+ tipo);
+        try {
+            let findUid = await Uid.validUid(mail.id);
+            Logguer.debug('#8):=========================Validar UID================================== '+mail.id)
+            Logguer.debug(findUid);
+            if (findUid){
+                throw new Error('Este correo ya fue enviado');
+            }else{
+                Logguer.debug('#6): Contenido de la variable text: ======================================================= ')
+                Logguer.debug('#7): '+mail.text);
+                await bot.telegram.sendMessage(USER, 'Grupo: '+tipo+'\n\nDe: '+mail.from+' \n\nAsunto: '+mail.subject+' \n\nContenido:\n\n'+mail.text);
+                let data = {};
+                data.uid = mail.id;
+                data.send = true;
+                let saving = await Uid.registerUidSend(data);
+                if (!saving){
+                    Logguer.error('No se guardo el registro del UID');
+                }else{
+                    Logguer.info('Se registro el uid como enviado')
+                }
+            }
+        } catch (error) {
+            if (error.message.includes('400: Bad Request: message is too long')){
 
+                let data = {};
+                let texto = mail.text;
+                data.from = mail.from;
+                texto = texto.trim().split('\n');
+                texto = texto.map(texto => texto);
+                data.texto = texto
+                createOne(data).then(async results => {
+                    try {
+                        await bot.telegram.sendDocument(USER,{source:results},{caption: 'Su correo es muy largo para ser enviado via texto, aqui tiene un pdf con el contenido:'})
+                    } catch (error) {
+                        Logguer.error(error)
+                    }
+                }).catch(error => {
+                    Logguer.error(error)
+                })
+
+                Logguer.debug('Se detecto un mensaje largo');
+            }
+            Logguer.error(error)
+        }
     });
 }
 
 imap.connect();
-
-
-
