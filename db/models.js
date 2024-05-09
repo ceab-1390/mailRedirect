@@ -35,7 +35,7 @@ class Uid{
     static async validUid(obj){
         try {
             const uid = await uidModel.findOne({uid:obj});
-            logguer.debug('DB1: '+uid)
+            logguer.debug('DB1: '+obj)
             if (uid == null){
                 return false;
             }else{
