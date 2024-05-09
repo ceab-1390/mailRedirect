@@ -69,7 +69,7 @@ async function findMails(){
                                     mails[result].text = mail.text ? mail.text : mail.html;
                                     mails[result].filter = false;
                                     //Logguer.debug(mails[seqno]);
-                                    process.emit('parseEnd', result);
+                                    process.emit('parseEnd', result);//
                                     consumed = true;
                                 }
                             })
