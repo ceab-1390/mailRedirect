@@ -200,9 +200,7 @@ async function findMails(){
 };
 
 
-imap.once('error', (error) =>{
-    Logguer.log(error)
-});
+
 
 let connect = true;
 let attempts = 0;
@@ -211,15 +209,16 @@ const baseDelay = 1000;
 const delayMultiplier = 2;
 
 while (connect && attempts < maxAttempts) {
-    try {
         imap.connect();
         connect = false;
         Logguer.debug('cambio la variable connect: '+connect)
-    } catch (error) {
-        Logguer.error('Error al conectar:', error);
-        attempts++;
-        const delay = baseDelay * Math.pow(delayMultiplier, attempts);
-        Logguer.log(`Intento ${attempts} fallido. Reintentando en ${delay} ms...`);
-        setTimeout(() => {}, delay); // Esperar antes del próximo intento
-    }
 }
+
+imap.once('error', (error) =>{
+    Logguer.error('Error al conectar:', error);
+    attempts++;
+    const delay = baseDelay * Math.pow(delayMultiplier, attempts);
+    Logguer.log(`Intento ${attempts} fallido. Reintentando en ${delay} ms...`);
+    setTimeout(() => {}, delay); // Esperar antes del próximo intento
+    connect = true;
+});
