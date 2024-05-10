@@ -16,6 +16,7 @@ const regex = /(Error)|(Falla)|(Incidencia)|(VPTI)|(Invitacion)|(Reunion)|(CDC)/
 
 let mails = [];
 let save = false;
+let connect = false;
 let aux = true;
 const imapConfig = {
     user: process.env.IMAP_USER,
@@ -27,6 +28,7 @@ const imapConfig = {
 
 const imap = new Imap(imapConfig);
 imap.once('ready',async function() {
+    connect = true;
     Logguer.log('Conexión al correo establecida');
     imap.openBox('INBOX', false,async function(err, box) {
         if (err) throw err;
@@ -202,23 +204,26 @@ async function findMails(){
 
 
 
-let connect = true;
+
 let attempts = 0;
 const maxAttempts = 5; 
 const baseDelay = 1000; 
 const delayMultiplier = 2;
 
-while (connect && attempts < maxAttempts) {
-        imap.connect();
-        connect = false;
-        Logguer.debug('cambio la variable connect: '+connect)
-}
 
-imap.once('error', (error) =>{
+do{
+    console.log('Intentando conectar al IMAP Server');
+    imap.connect();
+    imap.once('error', (error) =>{
+        Logguer.error('Error al conectar:', error);
+        connect = false;
+    });
+    await new Promise(resolve => setTimeout(resolve, 5000)); 
+    //connect = true
+}while (!connect);
+
+
+
+imap.on('error', (error) =>{
     Logguer.error('Error al conectar:', error);
-    attempts++;
-    const delay = baseDelay * Math.pow(delayMultiplier, attempts);
-    Logguer.log(`Intento ${attempts} fallido. Reintentando en ${delay} ms...`);
-    setTimeout(() => {}, delay); // Esperar antes del próximo intento
-    connect = true;
 });
