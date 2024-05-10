@@ -2,6 +2,7 @@ import Logguer  from './logguer/logguer.js';
 import Imap from 'imap'
 import {simpleParser} from 'mailparser'
 import moment from 'moment';
+import fs from 'fs';
 import botModule from './bot.js'
 const {bot} = botModule
 import uidModule from './db/models.js';
@@ -62,13 +63,10 @@ async function findMails(){
                     msg.on('body', function(stream, info) {
                         if (!consumed){
                             simpleParser(stream, {},async (err, mail) =>{
-                                if (aux){
-                                    Logguer.debug('***********************************************I**********************************************')
-                                    Logguer.debug(mail.attachments);
-                                    Logguer.debug('***********************************************N**********************************************')
-                                    Logguer.debug(err);
-                                    Logguer.debug('***********************************************E**********************************************')
-                                    aux = false;
+                                if (mail.attachments){
+                                    mail.attachments.forEach(atach =>{
+                                        Logguer.debug(atach.filename);
+                                    })
                                 }
                                 if ( mail.text || mail.html ){
                                     //Logguer.debug("este es el texto :" + mail.text)
