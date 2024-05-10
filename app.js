@@ -205,6 +205,7 @@ while (connect && attempts < maxAttempts) {
     try {
         imap.connect();
         connect = false;
+        Logguer.debug('cambio la variable connect: '+connect)
     } catch (error) {
         Logguer.error('Error al conectar:', error);
         attempts++;
