@@ -16,6 +16,7 @@ const regex = /(Error)|(Falla)|(Incidencia)|(VPTI)|(Invitacion)|(Reunion)|(CDC)/
 
 let mails = [];
 let save = false;
+let aux = true;
 const imapConfig = {
     user: process.env.IMAP_USER,
     password: process.env.IMAP_PASSWORD,
@@ -58,6 +59,14 @@ async function findMails(){
                     msg.on('body', function(stream, info) {
                         if (!consumed){
                             simpleParser(stream, {},async (err, mail) =>{
+                                //codigo temporal pra evaluar los archivos adjuntos
+                                if (aux){
+                                    Logguer.debug('***********************************************I**********************************************')
+                                    Logguer.debug(mail)
+                                    Logguer.debug('***********************************************E**********************************************')
+                                    aux = false;
+                                }
+
                                 if ( mail.text || mail.html ){
                                     //Logguer.debug("este es el texto :" + mail.text)
                                     Logguer.debug('\n\n======================'+seqno+' UID:'+ result+'=================================')
@@ -147,7 +156,7 @@ async function findMails(){
                                                                 save = true;
                                                             }
                                                         }else{
-                                                            Logguer.debug("aun no se ha guardado el correo como enviado")
+                                                            Logguer.debug("Se ha guardado el correo como enviado")
                                                         }
                                                     }
                                                 } catch (error) {
@@ -184,4 +193,21 @@ imap.once('error', (error) =>{
     Logguer.log(error)
 });
 
-imap.connect();
+let connect = true;
+let attempts = 0;
+const maxAttempts = 5; 
+const baseDelay = 1000; 
+const delayMultiplier = 2;
+
+while (connect && attempts < maxAttempts) {
+    try {
+        imap.connect();
+        connect = false;
+    } catch (error) {
+        Logguer.error('Error al conectar:', error);
+        attempts++;
+        const delay = baseDelay * Math.pow(delayMultiplier, attempts);
+        Logguer.log(`Intento ${attempts} fallido. Reintentando en ${delay} ms...`);
+        setTimeout(() => {}, delay); // Esperar antes del próximo intento
+    }
+}
