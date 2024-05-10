@@ -55,6 +55,13 @@ async function findMails(){
                 const f = imap.fetch(result, fetchOptions);
                 let consumed = false;
                 f.once('message', function(msg, seqno) {
+                    if (aux){
+                        Logguer.debug('***********************************************I**********************************************')
+                        Logguer.debug(seqno);
+                        Logguer.debug('***********************************************N**********************************************')
+                        Logguer.debug(msg);
+                        Logguer.debug('***********************************************E**********************************************')
+                    }
                     Logguer.debug("mensaje numero: "+seqno)
                     Logguer.debug("Procesando mensajes: "+seqno +" UID: "+result);
                     msg.on('body', function(stream, info) {
