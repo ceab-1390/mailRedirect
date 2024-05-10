@@ -15,6 +15,7 @@ const TLS_VAL = TLS === 'true';
 const regex = /(Error)|(Falla)|(Incidencia)|(VPTI)|(Invitacion)|(Reunion)|(CDC)/i;
 
 let mails = [];
+let save = false;
 const imapConfig = {
     user: process.env.IMAP_USER,
     password: process.env.IMAP_PASSWORD,
@@ -87,7 +88,7 @@ async function findMails(){
                         });
                         Filter.forEach(async mailFilter =>{
                             if (!mails[mailFilter.id].filter){
-                                Logguer.debug("El id filtrado es: "+mailFilter.id + " y el contenido del subject desde mails[result] es: "+ mails[mailFilter.id].id + "Marca de filtrado: "+mails[mailFilter.id].filter);
+                                Logguer.debug("El id filtrado es: "+mailFilter.id + " y el contenido del subject desde mails[result] es: "+ mails[mailFilter.id].id + " Marca de filtrado: "+mails[mailFilter.id].filter);
                                 
                                 const match = mailFilter.subject.match(regex);
                                 //Logguer.debug(match)
@@ -111,8 +112,10 @@ async function findMails(){
                                             let saving = await Uid.registerUidSend(data);
                                             if (!saving){
                                                 Logguer.error('No se guardo el registro del UID');
+                                                save = false;
                                             }else{
-                                                Logguer.info('Se registro el uid como enviado')
+                                                Logguer.info('Se registro el uid como enviado');
+                                                save = true;
                                             }
                                         }
                                     } catch (error) {
@@ -130,15 +133,21 @@ async function findMails(){
                                                     if (findUid){
                                                         throw new Error('Este correo ya fue enviado'); 
                                                     }else{
-                                                        await bot.telegram.sendDocument(USER,{source:results},{caption: 'Su correo es muy largo para ser enviado via texto, aqui tiene un pdf con el contenido:'})
-                                                        let data = {};
-                                                        data.uid = mailFilter.id;
-                                                        data.send = true;
-                                                        let saving = await Uid.registerUidSend(data);
-                                                        if (!saving){
-                                                            Logguer.error('No se guardo el registro del UID');
+                                                        await bot.telegram.sendDocument(USER,{source:results},{caption: mailFilter.subject})
+                                                        if (!save){
+                                                            let data = {};
+                                                            data.uid = mailFilter.id;
+                                                            data.send = true;
+                                                            let saving = await Uid.registerUidSend(data);
+                                                            if (!saving){
+                                                                Logguer.error('No se guardo el registro del UID');
+                                                                save = false;
+                                                            }else{
+                                                                Logguer.info('Se registro el uid como enviado, se envio como PDF');
+                                                                save = true;
+                                                            }
                                                         }else{
-                                                            Logguer.info('Se registro el uid como enviado')
+                                                            Logguer.debug("aun no se ha guardado el correo como enviado")
                                                         }
                                                     }
                                                 } catch (error) {
