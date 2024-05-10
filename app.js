@@ -113,6 +113,7 @@ async function findMails(){
                                         }else{
                                             Logguer.debug('#): Contenido de la variable text: ======================================================= ')
                                             Logguer.debug('#): '+mailFilter.text);
+                                            Logguer.info('Enviando mensaje via telegram')
                                             await bot.telegram.sendMessage(USER, 'Grupo: '+tipo+'\n\nDe: '+mailFilter.from+' \n\nAsunto: '+mailFilter.subject+' \n\nContenido:\n\n'+mailFilter.text);
                                             let data = {};
                                             data.uid = mailFilter.id;
@@ -141,6 +142,7 @@ async function findMails(){
                                                     if (findUid){
                                                         throw new Error('Este correo ya fue enviado'); 
                                                     }else{
+                                                        Logguer.info('Enviando archivo via telegram')
                                                         await bot.telegram.sendDocument(USER,{source:results},{caption: mailFilter.subject})
                                                         if (!save){
                                                             let data = {};
