@@ -57,16 +57,15 @@ async function findMails(){
                     Logguer.debug("mensaje numero: "+seqno)
                     Logguer.debug("Procesando mensajes: "+seqno +" UID: "+result);
                     msg.on('body', function(stream, info) {
+                        //codigo temporal pra evaluar los archivos adjuntos
+                        if (aux){
+                            Logguer.debug('***********************************************I**********************************************')
+                            Logguer.debug(info);
+                            Logguer.debug('***********************************************E**********************************************')
+                            aux = false;
+                        }
                         if (!consumed){
                             simpleParser(stream, {},async (err, mail) =>{
-                                //codigo temporal pra evaluar los archivos adjuntos
-                                if (aux){
-                                    Logguer.debug('***********************************************I**********************************************')
-                                    Logguer.debug(mail)
-                                    Logguer.debug('***********************************************E**********************************************')
-                                    aux = false;
-                                }
-
                                 if ( mail.text || mail.html ){
                                     //Logguer.debug("este es el texto :" + mail.text)
                                     Logguer.debug('\n\n======================'+seqno+' UID:'+ result+'=================================')
