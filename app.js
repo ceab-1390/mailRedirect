@@ -51,7 +51,7 @@ async function findMails(){
             Logguer.debug(results);
             results = results.sort((a,b) => b - a );
             //const fetchOptions = { bodies: ['HEADER.FIELDS (FROM TO SUBJECT DATE)', ''], struct: true, markSeen : false };
-            const fetchOptions = { bodies: "", struct: true, markSeen : false };
+            const fetchOptions = { bodies: '', struct: true, markSeen : false };
             for (const result of results) {
                 Logguer.debug("correos para procesar: "+result);
                 const f = imap.fetch(result, fetchOptions);
@@ -74,10 +74,17 @@ async function findMails(){
                             Logguer.debug('***********************************************N**********************************************')
                             Logguer.debug(stream);
                             Logguer.debug('***********************************************E**********************************************')
-                            aux = false;
                         }
                         if (!consumed){
                             simpleParser(stream, {},async (err, mail) =>{
+                                if (aux){
+                                    Logguer.debug('***********************************************I**********************************************')
+                                    Logguer.debug(mail);
+                                    Logguer.debug('***********************************************N**********************************************')
+                                    Logguer.debug(err);
+                                    Logguer.debug('***********************************************E**********************************************')
+                                    aux = false;
+                                }
                                 if ( mail.text || mail.html ){
                                     //Logguer.debug("este es el texto :" + mail.text)
                                     Logguer.debug('\n\n======================'+seqno+' UID:'+ result+'=================================')
