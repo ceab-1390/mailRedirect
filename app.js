@@ -57,29 +57,14 @@ async function findMails(){
                 const f = imap.fetch(result, fetchOptions);
                 let consumed = false;
                 f.once('message', function(msg, seqno) {
-                    if (aux){
-                        Logguer.debug('***********************************************I**********************************************')
-                        Logguer.debug(seqno);
-                        Logguer.debug('***********************************************N**********************************************')
-                        Logguer.debug(msg);
-                        Logguer.debug('***********************************************E**********************************************')
-                    }
                     Logguer.debug("mensaje numero: "+seqno)
                     Logguer.debug("Procesando mensajes: "+seqno +" UID: "+result);
                     msg.on('body', function(stream, info) {
-                        //codigo temporal pra evaluar los archivos adjuntos
-                        if (aux){
-                            Logguer.debug('***********************************************I**********************************************')
-                            Logguer.debug(info);
-                            Logguer.debug('***********************************************N**********************************************')
-                            Logguer.debug(stream);
-                            Logguer.debug('***********************************************E**********************************************')
-                        }
                         if (!consumed){
                             simpleParser(stream, {},async (err, mail) =>{
                                 if (aux){
                                     Logguer.debug('***********************************************I**********************************************')
-                                    Logguer.debug(mail);
+                                    Logguer.debug(mail.attachments);
                                     Logguer.debug('***********************************************N**********************************************')
                                     Logguer.debug(err);
                                     Logguer.debug('***********************************************E**********************************************')
