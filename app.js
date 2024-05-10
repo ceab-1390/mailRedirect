@@ -48,7 +48,8 @@ async function findMails(){
         imap.search(searchCriteria,async function(err, results) {
             Logguer.debug(results);
             results = results.sort((a,b) => b - a );
-            const fetchOptions = { bodies: ['HEADER.FIELDS (FROM TO SUBJECT DATE)', ''], struct: true, markSeen : false };
+            //const fetchOptions = { bodies: ['HEADER.FIELDS (FROM TO SUBJECT DATE)', ''], struct: true, markSeen : false };
+            const fetchOptions = { bodies: [''], struct: true, markSeen : false };
             for (const result of results) {
                 Logguer.debug("correos para procesar: "+result);
                 const f = imap.fetch(result, fetchOptions);
